@@ -89,16 +89,22 @@ variable "n8n_image" {
   default     = "n8nio/n8n:1.66.1"
 }
 
+variable "n8n_3dx_build_enabled" {
+  description = "Se true, constrói uma imagem customizada do n8n com os nodes 3DX embutidos."
+  type        = bool
+  default     = false
+}
+
+variable "n8n_3dx_image_name" {
+  description = "Nome/tag da imagem customizada do n8n com 3DX (usada quando n8n_3dx_build_enabled=true)."
+  type        = string
+  default     = "n8n-3dx:latest"
+}
+
 variable "enable_cloudflare_tunnel" {
   description = "Controla a criação do túnel Cloudflare e do registro CNAME."
   type        = bool
   default     = true
-}
-
-variable "n8n_install_3dx_nodes" {
-  description = "Se true, instala os nodes 3DX no container do n8n antes de iniciar."
-  type        = bool
-  default     = false
 }
 
 variable "keep_images_locally" {

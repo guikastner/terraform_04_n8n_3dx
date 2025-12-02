@@ -3,8 +3,15 @@ resource "docker_volume" "n8n_data" {
 }
 
 resource "docker_image" "n8n" {
-  name         = var.n8n_image
+  name         = var.n8n_3dx_build_enabled ? var.n8n_3dx_image_name : var.n8n_image
   keep_locally = var.keep_images_locally
+
+  dynamic "build" {
+    for_each = var.n8n_3dx_build_enabled ? [1] : []
+    content {
+      context = "${path.module}/docker/n8n-custom"
+    }
+  }
 }
 
 resource "docker_container" "n8n" {
@@ -12,13 +19,7 @@ resource "docker_container" "n8n" {
   image   = docker_image.n8n.image_id
   restart = "unless-stopped"
 
-  command = var.n8n_install_3dx_nodes ? [
-    "mkdir -p /home/node/.n8n/custom && cd /home/node/.n8n/custom && /usr/local/bin/npm install https://btcc.s3.dualstack.eu-west-1.amazonaws.com/widget-lab/npm/n8n-nodes-3dxinterfaces/dist/widget-lab-n8n-nodes-3dxinterfaces-0.6.0.tgz && exec n8n start"
-  ] : [
-    "start"
-  ]
-
-  entrypoint = var.n8n_install_3dx_nodes ? ["/bin/sh", "-c"] : null
+  command = ["start"]
 
   env = [
     "DB_TYPE=postgresdb",
